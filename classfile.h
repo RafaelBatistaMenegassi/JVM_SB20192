@@ -209,8 +209,8 @@ typedef enum access_flags
 
 enum array_type
 {
-  T_BOOLEAN = 4.
-  T_CHAR,
+    T_BOOLEAN = 4,
+    T_CHAR,
 	T_FLOAT,
 	T_DOUBLE,
 	T_BYTE,
@@ -581,7 +581,7 @@ typedef struct vetor_locais
 typedef struct frame
 {
   u4 return_address; // Verificar se é realmente endereço de retorno
-	Pilha_operandos *p;
+	pilha_operandos *p;
 	Vetor_locais *v;
 	u2 vetor_length;
 	Cp_info *cp;
