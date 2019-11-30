@@ -1,21 +1,16 @@
-/*Substitui os arquivos: classFileStruct.h + structures.h*/
+/* Arquivo cabeçalho contendo as estruturas básicas utilizadas na JVM */
 
 /*
 Universidade de Brasília - 02/2019
 Software Básico - Turma A
+Projeto lógico JVM
 
 Alunos:
-    Brenda Souza
-    Jéssica Oliveira
-    Rafael Alencar
-    Rafael Batista
-    Rodrigo Cardoso
-
-Projeto:
-    Leitor/Exibidor de arquivos .class.
-
-Arquivo:
-    "ClassFile.h"
+				Brenda Barbosa de Souza   		 - 12/0111918
+				Jéssica da Silva Oliveira 		 - 13/0028983
+				Rafael Batista Menegassi  		 - 14/0159355
+				Rafael Silva de Alencar   		 - 13/0130834
+				Rodrigo Neris Ferreira Cardoso - 14/0161597
 
 Descrição:
     Especificação de estruturas relativas a arquivos de extensão ".class".
@@ -48,7 +43,6 @@ ClassFile {
 }
 
 Definição de tipagem seguindo os seguintes preceitos:
-
     - u1 -> uint8_t;
     - u2 -> uint16_t;
     - u4 -> uint32_t;
@@ -62,16 +56,34 @@ Para maiores detalhes, verificar implementação.
 
 #include <stdint.h> // biblioteca que define o "tamanho das coisas"
 #include "pilha_operandos.h"
+
 /* ------------- */
 /* TIPAGEM GERAL */
 /* ------------- */
-
 typedef uint8_t     u1;
 typedef uint16_t    u2;
 typedef uint32_t    u4;
 typedef uint64_t    u8;
 
-// Valores MAX para debug
+#ifndef FLOAT_DEF
+#define FLOAT_DEF
+
+#define expoente(x) ((x << 1) >> 24)
+#define mantissa(x) ((x << 9) >> 9)
+#define sinal(x) (x >> 31)
+
+#endif
+
+#ifndef DOUBLE_DEF
+#define DOUBLE_DEF
+
+#define expoente_d(x) ((x << 1) >> 53)
+#define mantissa_d(x) ((x << 12) >> 12)
+#define sinal_d(x) (x >> 63)
+
+#endif
+
+// Valores máximos para debug
 #define NAME_INDEX 1
 #define NAME_AND_TYPE 2
 #define STRING_INDEX 3
@@ -83,41 +95,89 @@ typedef uint64_t    u8;
 #define MAXU2 65535
 #define MAXU4 2147483647
 
-// Informaces referentes a  Constant Pool
+// Enum para os possiveis valores da tag de entrada da CP
+typedef enum tag_values
+{
+	CONSTANT_Utf8                   		= 1,
+	CONSTANT_Integer               			= 3,
+	CONSTANT_Float                  		= 4,
+	CONSTANT_Long                   		= 5,
+	CONSTANT_Double                 		= 6,
+	CONSTANT_Class                  		= 7,
+	CONSTANT_String                 		= 8,
+	CONSTANT_Fieldref                  	= 9,
+	CONSTANT_Methodref                 	= 10,
+	CONSTANT_InterfaceMethodref        	= 11,
+	CONSTANT_NameAndType            		= 12,
+	CONSTANT_MethodHandle           		= 15,
+	CONSTANT_MethodType             		= 16,
+	CONSTANT_InvokeDynamic          		= 18
+} tag_values;
+
+// Enum para tipo de array
+typedef enum array_type
+{
+  T_BOOLEAN = 4,
+  T_CHAR,
+	T_FLOAT,
+	T_DOUBLE,
+	T_BYTE,
+	T_SHORT,
+	T_INT,
+	T_LONG
+} array_type;
+
+// Enum de possíveis valores de flags de acesso
+typedef enum access_flags
+{
+	PUBLIC           = 1,
+	PRIVATE          = 2,
+	PROTECTED        = 4,
+	STATIC           = 8,
+	FINAL            = 16,
+  SUPER            = 32,
+	VOLATILE         = 64,
+	TRANSIENT        = 128,
+  INTERFACE_FLAG   = 512,
+  ABSTRACT         = 1024,
+	SYNTHETIC        = 4096,
+	ENUM             = 16384
+} access_flags;
+
+// Informaces referentes a Constant Pool
 typedef struct cp_info
 {
-    // Byte de tag: indica qual o tipo de entrada na CP
-    u1 tag;
+    u1 tag; // Byte de tag: indica qual o tipo de entrada na CP
 
     // Union com tipos de entrada da CP
     union
     {
         struct
         {
-            u2 name;
+            u2 name_index;
         } Class;
 
         struct
         {
-            u2 class_name;
-            u2 name_and_type;
-        } Field;
+            u2 class_index;
+            u2 name_and_type_index;
+        } Fieldref;
 
         struct
         {
-            u2 class_name;
-            u2 name_and_type;
-        } Method;
+            u2 class_index;
+            u2 name_and_type_index;
+        } Methodref;
 
         struct
         {
-            u2 class_name;
-            u2 name_and_type;
-        } InterfaceMethod;
+            u2 class_index;
+            u2 name_and_type_index;
+        } InterfaceMethodref;
 
         struct
         {
-            u2 string;
+            u2 string_index;
         } String;
 
         struct
@@ -132,97 +192,51 @@ typedef struct cp_info
 
         struct
         {
-            u4 hi_bytes;
-            u4 lo_bytes;
+            u4 high_bytes;
+            u4 low_bytes;
         } Long;
 
         struct
         {
-            u4 hi_bytes;
-            u4 lo_bytes;
+            u4 high_bytes;
+            u4 low_bytes;
         } Double;
 
         struct
         {
-            u2 name;
-            u2 descriptor;
+            u2 name_index;
+            u2 descriptor_index;
         } NameAndType;
 
         struct
         {
             u1 *bytes;
             u2 length;
-        } Utf8;
+        } UTF8;
 
         struct
         {
             u1 reference_kind;
-            u2 reference;
+            u2 reference_index;
         } MethodHandle;
 
         struct
         {
-            u2 descriptor;
+            u2 descriptor_index;
         } MethodType;
 
         struct
         {
-            u2 name_and_type;
-            u2 bootstrap_method_attr;
-        } InvokeDynamic;
-
-    } cp_union;
+            u2 name_and_type_index;
+            u2 bootstrap_method_attr_index;
+        } InvokeDynamicInfo;
+    } UnionCP;
 } Cp_info;
-
-// Enum para os possiveis valores da tag de entrada da CP
-enum tag_values
-{
-	CONSTANT_Utf8                   = 1,
-	CONSTANT_Integer                = 3,
-	CONSTANT_Float                  = 4,
-	CONSTANT_Long                   = 5,
-	CONSTANT_Double                 = 6,
-	CONSTANT_Class                  = 7,
-	CONSTANT_String                 = 8,
-	CONSTANT_Field                  = 9,
-	CONSTANT_Method                 = 10,
-	CONSTANT_InterfaceMethod        = 11,
-	CONSTANT_NameAndType            = 12,
-	CONSTANT_MethodHandle           = 15,
-	CONSTANT_MethodType             = 16,
-	CONSTANT_InvokeDynamic          = 18
-};
-
-// Enum de possíveis valores de flags de acesso
-typedef enum access_flags
-{
-	PUBLIC      = 1,
-	PRIVATE     = 2,
-	PROTECTED   = 4,
-	STATIC      = 8,
-	FINAL       = 16,
-	VOLATILE    = 64,
-	TRANSIENT   = 128,
-	SYNTHETIC   = 4096,
-	ENUM        = 16384
-} Access_flags;
-
-enum array_type
-{
-    T_BOOLEAN = 4,
-    T_CHAR,
-	T_FLOAT,
-	T_DOUBLE,
-	T_BYTE,
-	T_SHORT,
-	T_INT,
-	T_LONG
-};
 
 // Informações sobre Atributos
 typedef struct attribute_info
 {
-    u2 attribute_name; // index válido na CP indicando o nome do atributo
+    u2 attribute_name_index; // index válido na CP indicando o nome do atributo
     u4 attribute_length;
     void *info;
 } Attribute_info;
@@ -230,44 +244,43 @@ typedef struct attribute_info
 typedef struct static_data
 {
   u4 *low;
-  u4 *hi;
+  u4 *high;
   u1 *string;
 } Static_data;
 
 // Informações sobre Campos (Fields)
 typedef struct field_info
 {
-    u2 name;
-    u2 descriptor;
+    u2 name_index;
+    u2 descriptor_index;
     u2 attributes_count;
     u2 access_flags;
     Attribute_info **attributes;
+    Static_data *dadosStatics;
 } Field_info;
 
 // Informações sobre Exceções
-typedef struct exception_info
+typedef struct exception_table
 {
     u2 start_pc;
     u2 end_pc;
     u2 handler_pc;
     u2 catch_type;
-} Exception_info;
+} Exception_table;
 
-// Informações sobre Número de Linhas
 typedef struct line_number_info
 {
     u2 line_number;
     u2 start_pc;
 } Line_number_info;
 
-// Informações sobre Tabela de Linhas
 typedef struct line_number_table
 {
     Line_number_info *info;
-    u2 line_number_length;
+    u2 line_number_table_length;
 } Line_number_table;
 
-// Informações gerais de Código (Code)
+// Informações gerais de (Code)
 typedef struct code_attribute
 {
     u1 *code;
@@ -281,14 +294,14 @@ typedef struct code_attribute
 
     Attribute_info **attributes;
 
-    Exception_info *ex_info;
+    Exception_table *ex_info;
 } Code_attribute;
 
 // Informações sobre Métodos (Methods)
 typedef struct method_info
 {
-    u2 name;
-    u2 descriptor;
+    u2 name_index;
+    u2 descriptor_index;
     u2 access_flags;
 
     u2 attributes_count;
@@ -298,57 +311,65 @@ typedef struct method_info
 // Informações sobre Atributos do Fonte
 typedef struct source_file_attribute
 {
-    u2 source_file;
+    u2 source_file_index;
 } Source_file_attribute;
 
 // Informações sobre Atributos de Constantes
-typedef struct constant_value_attribute
+typedef struct constantValue_attribute
 {
-    u2 constant_value;
-} Constant_value_attribute;
+    u2 constantvalue_index;
+} ConstantValue_attribute;
 
 // Informações sobre Atributos de Exceções
-typedef struct exception_attribute
+typedef struct exceptions_attribute
 {
-    u2 num_exceptions;
-    u2 *exception_info;
-} Exception_attribute;
+    u2 number_of_exceptions;
+    u2 *exception_index_info;
+} Exceptions_attribute;
 
 // Informações sobre Classes
 typedef struct classes
 {
-    u2 inner_name;
+    u2 inner_name_index;
 
-    u2 inner_class_info;
+    u2 inner_class_info_index;
     u2 inner_class_access_flags;
 
-    u2 outer_class_info;
+    u2 outer_class_info_index;
 } Classes;
 
 // Informações sobre Atributos de Classes Internas (Inner Classes)
-typedef struct inner_classes_attribute
+typedef struct innerClasses_attribute
 {
-    u2 num_classes;
+    u2 number_of_classes;
     Classes **classes_array;
-} Inner_classes_attribute;
+} InnerClasses_attribute;
 
 typedef struct enclosingMethod_attribute
 {
-  u2 class;
+  u2 class_index;
   u2 method_index;
 
 } EnclosingMethod_attribute;
 
+/*
+typedef struct synthetic_attribute {		// COMO FAZ COM ESSA?
+
+	u2 attribute_name_index;
+	u4 attribute_length;		// The value of the attribute_length item is zero.
+} Synthetic_attribute;
+*/
+
 // Informações sobre Atributos de Assinatura
 typedef struct signature_attribute
 {
-    u2 signature;
+    u2 signature_index;
 } Signature_attribute;
 
-typedef struct source_debug_extension
+typedef struct sourceDebugExtension_attribute
 {
   u1 *debug_extension; // Aloca com o tamano de attribute_length
-} Source_debug;
+} SourceDebugExtension_attribute;
 
 typedef struct local_variable_table
 {
@@ -358,20 +379,29 @@ typedef struct local_variable_table
 	u2 descriptor_index;
 	u2 index;
 
-} Local_variable;
+} Local_variable_table;
 
 typedef struct localVariableTable_attributes
 {
 
 	u2 local_variable_table_length;
-	Local_variable *local_variables; //Tamanho de local_variable_table_length
+	Local_variable_table *local_variables; //Tamanho de local_variable_table_length
 
-} Local_variable_attributes;
+} LocalVariableTable_attributes;
+
+typedef struct localVariableTypeTable {
+
+	u2 local_variable_type_table_length;
+	LocalVariableTable_attributes *local_variables; // Alocar com o tamanho de local_variable_table_length
+
+} localVariableTypeTable;
+
+struct annotation;
+//struct element_value;
 
 /*Adicionados*/
 struct element_value
 {
-
 	u1 tag;
 	union{
 
@@ -401,10 +431,8 @@ typedef struct element_value element_value;
 
 struct element_value_pairs
 {
-
 	u2 element_name_index;
 	element_value value;
-
 };
 typedef struct element_value_pairs element_value_pairs;
 
@@ -417,7 +445,6 @@ struct annotation
 
 };
 typedef struct annotation annotation;
-
 
 struct runTimeVisibleAnnotations_attribute
 {
@@ -502,17 +529,80 @@ typedef struct verification_type_info
       tag = 6 -> uninitializedThis
     */
     // Union de verificação de tipos
-    union
-    {
-        struct
-        {
-            u2 cp; // index da classe na CP
-        } object_variable_info; // tag = 7
+    union{
 
-        struct
-        {
-            u2 offset;
-        } uninitialized_variable_info; // tag = 8
+  		struct {
+
+  			//u1 tag; // possuira valor 0;
+
+  		} top_variable_info;
+
+  		struct {
+
+  			//u1 tag; // possuira valor 1;
+
+  		} integer_variable_info;
+
+  		struct {
+
+  			//u1 tag; // possuira valor 2;
+
+  		} float_variable_info;
+
+  		/**	 ATENCAo - Tanto para Long como Double (64bits ambas).
+  		This structure gives the contents of two locations
+  		in the operand stack or in the local variable array.
+  		If the location is a local variable, then:
+  		It must not be the local variable with the highest index.
+  		The next higher numbered local variable contains the verification type top.
+  		If the location is an operand stack entry, then:
+  		The current location must not be the topmost location of the operand stack.
+  		The next location closer to the top of the operand stack contains the verification type top.
+  		*/
+
+  		struct {
+
+  			//u1 tag; // possuira valor 4;
+
+  		} long_variable_info;
+
+  		struct{
+
+  			//u1 tag; // possuira valor 3;
+
+  		} double_variable_info;
+
+  		struct {
+
+  			//u1 tag; // possuira valor 5;
+
+  		} null_variable_info;
+
+  		struct {
+
+  			//u1 tag; // possuira valor 6;
+
+  		} uninitializedThis_variable_info;
+
+  		/**The Object_variable_info type indicates that the location
+  		contains an instance of the class represented by the CONSTANT_Class_info*/
+
+  		struct {
+
+  			//u1 tag; // possuira valor 7;
+  			u2 cpool_index; // index da classe na constant_pool
+
+  		} object_variable_info;
+
+  		struct {
+
+  			//u1 tag; // possuira valor 8
+  			u2 offset; /** The offset item indicates the offset, in the code array
+  						of the Code attribute that contains this StackMapTable
+  						attribute, of the new instruction (§new) that created the
+  						object being stored in the location.*/
+
+  		} uninitialized_variable_info;
 
     } type_info;
 } Verification_type_info;
@@ -556,21 +646,21 @@ typedef struct stack_map_frame
         struct
         {
             u2 offset_delta;
-            u2 num_locals;
-            u2 num_stack_items;
-
+            u2 number_of_locals;
+            u2 number_of_stack_items;
             Verification_type_info **locals;
-            Verification_type_info ** stack;
+            Verification_type_info **stack;
         } full_frame;
+
     } map_frame_type;
 } Stack_map_frame;
 
 // Informações sobre Atributos de Mapeamento de Pilha
-typedef struct stack_map_attribute
+typedef struct stackMapTable_attribute
 {
-    u2 num_entries;
+    u2 number_of_entries;
     Stack_map_frame **entries;
-} Stack_map_attribute;
+} StackMapTable_attribute;
 
 typedef struct vetor_locais
 {
@@ -580,17 +670,18 @@ typedef struct vetor_locais
 
 typedef struct frame
 {
-  u4 return_address; // Verificar se é realmente endereço de retorno
-	pilha_operandos *p;
+  u4 end_retorno; // Verificar se é realmente endereço de retorno
+	Pilha_operandos *p;
 	Vetor_locais *v;
 	u2 vetor_length;
 	Cp_info *cp;
 	char *classeCorrente;
 } Frame;
+
 /* ------------- */
 /* ARQUIVO .CLASS */
 /* ------------- */
-// Estrutura referente ao arquivo .class em si
+// Estrutura referente ao arquivo .class geral
 typedef struct classfile
 {
     u4              magic;                  // The magic item supplies the magic number identifying the class file format; it has the value 0xCAFEBABE.
