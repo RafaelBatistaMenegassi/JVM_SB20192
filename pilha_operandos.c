@@ -1,4 +1,21 @@
-/* Arquivo de implementação das funções de controle da pilha de operandos */
+/*
+Universidade de Brasília - 02/2019
+Software Básico - Turma A
+JVM
+
+Alunos:
+				Brenda Barbosa de Souza   		 - 12/0111918
+				Jéssica da Silva Oliveira 		 - 13/0028983
+				Rafael Batista Menegassi  		 - 14/0159355
+				Rafael Silva de Alencar   		 - 13/0130834
+				Rodrigo Neris Ferreira Cardoso   - 14/0161597
+*/
+
+/** 
+ * Arquivo: pilha_operandos.c
+ * Implementação das funcoes de controle da pilha de operandos 
+ */
+
 #include "pilha_operandos.h"
 #include <stdio.h>
 #include <stdlib.h>

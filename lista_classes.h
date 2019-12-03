@@ -1,4 +1,17 @@
 /*
+Universidade de Brasília - 02/2019
+Software Básico - Turma A
+JVM
+
+Alunos:
+				Brenda Barbosa de Souza   		 - 12/0111918
+				Jéssica da Silva Oliveira 		 - 13/0028983
+				Rafael Batista Menegassi  		 - 14/0159355
+				Rafael Silva de Alencar   		 - 13/0130834
+				Rodrigo Neris Ferreira Cardoso   - 14/0161597
+*/
+
+/*
  * Arquivo: lista_classes.h
  * Desc: Arquivo cabecalho que contem a estrutura para armazenar a lista de classes carregadas
  *       e assinatura das funcoes em lista_classes.c

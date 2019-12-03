@@ -1,4 +1,19 @@
-/* Arquivo cabeçalho da implementação das instruções e funções auxiliares.
+/*
+Universidade de Brasília - 02/2019
+Software Básico - Turma A
+JVM
+
+Alunos:
+				Brenda Barbosa de Souza   		 - 12/0111918
+				Jéssica da Silva Oliveira 		 - 13/0028983
+				Rafael Batista Menegassi  		 - 14/0159355
+				Rafael Silva de Alencar   		 - 13/0130834
+				Rodrigo Neris Ferreira Cardoso   - 14/0161597
+*/
+
+/** 
+ * Arquivo: interpretador.h
+ * Cabeçalho da implementação das instruções e funções auxiliares.
  */
 
 #ifndef INTERPRETADOR_H
@@ -1483,6 +1498,8 @@ void ret_impl(Frame *f, u1 index, u1 par1);
  */
 void tableswitch_fantasma(Frame *par0, u1 par1, u1 par2);
 
+//void tableswitchundefined3_impl(Frame *par0, u1 par1, u1 par2);
+
 /**
  * @brief Instrução utilizada como placeholder, para ocupar a posição no array de instruções, para não prejudicar o mapeamento direto
  *
@@ -1492,19 +1509,23 @@ void tableswitch_fantasma(Frame *par0, u1 par1, u1 par2);
  */
 void lookupswitch_fantasma(Frame *par0, u1 par1, u1 par2);
 
+//void lookupswitchundefined3_impl(Frame *par0, u1 par1, u1 par2);
+
 /**
  * @brief Instrução para acessar uma jump table por index e efetuar um jump
  *
  * @param f Frame corrente
  */
-void tableswitch_impl(Frame *f);
+// void tableswitch_impl(Frame *f);
+void tableswitch_impl(Frame *f, u1 par1, u1 par2);
 
 /**
  * @brief Instrução para acessar uma chave em um jump table e efetuar um jump
  *
  * @param f Frame corrente
  */
-void lookupswitch_impl(Frame *f);
+// void lookupswitch_impl(Frame *f);
+void lookupswitch_impl(Frame *f, u1 par1, u1 par2);
 
 /**
  * @brief Instrução para retornar um inteiro de um método

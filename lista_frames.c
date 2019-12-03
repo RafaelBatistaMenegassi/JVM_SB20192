@@ -1,3 +1,16 @@
+/*
+Universidade de Brasília - 02/2019
+Software Básico - Turma A
+JVM
+
+Alunos:
+				Brenda Barbosa de Souza   		 - 12/0111918
+				Jéssica da Silva Oliveira 		 - 13/0028983
+				Rafael Batista Menegassi  		 - 14/0159355
+				Rafael Silva de Alencar   		 - 13/0130834
+				Rodrigo Neris Ferreira Cardoso   - 14/0161597
+*/
+
 /* Funções de controle e manipulação da lista de frames */
 
 #include <stdio.h>

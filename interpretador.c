@@ -1,3 +1,16 @@
+/*
+Universidade de Brasília - 02/2019
+Software Básico - Turma A
+JVM
+
+Alunos:
+				Brenda Barbosa de Souza   		 - 12/0111918
+				Jéssica da Silva Oliveira 		 - 13/0028983
+				Rafael Batista Menegassi  		 - 14/0159355
+				Rafael Silva de Alencar   		 - 13/0130834
+				Rodrigo Neris Ferreira Cardoso   - 14/0161597
+*/
+
 #include "interpretador.h"
 #include "jvm.h"
 #include "leitor_exibidor.h"
@@ -2009,10 +2022,12 @@ void jsr_impl(Frame *f, u1 branchbyte1, u1 branchbyte2){
 void ret_impl(Frame *f,u1 index, u1 par){
 }
 
-void tableswitch_fantasma(Frame *par0, u1 par1, u1 par2){
+void tableswitch_impl(Frame *f, u1 par1, u1 par2){
+	printf("Tableswitch -> Ainda nao implementado nessa versao!\npar1: %d\npar2: %d\nOp: %s\n", par1, par2, (char*)Pop_operandos(f->p));
 }
 
-void lookupswitch_fantasma(Frame *par0, u1 par1, u1 par2){
+void lookupswitch_impl(Frame *f, u1 par1, u1 par2){
+	printf("Lookupswitch -> Ainda nao implementado nessa versao!\npar1: %d\npar2: %d\nOp1: %s\n", par1, par2, (char*)Pop_operandos(f->p));
 }
 
 void ireturn_impl(Frame *f, u1 par1, u1 par2){
@@ -2332,7 +2347,7 @@ Lista_Objetos * buscaObjetoViaReferencia (Classfile * p) {
 void invokevirtual_impl(Frame *f, u1 indexbyte1, u1 indexbyte2){
 
 	u4 * end;
-  u2 indice_cp = (indexbyte1 << 8) | indexbyte2;
+  	u2 indice_cp = (indexbyte1 << 8) | indexbyte2;
 	char *classeDoMetodo = NULL;
 	int *parametros_cont = malloc(sizeof(int));
 
@@ -2341,7 +2356,11 @@ void invokevirtual_impl(Frame *f, u1 indexbyte1, u1 indexbyte2){
 		char *descriptorcopia = malloc(strlen(descriptormetodo)*sizeof(char));
 		strcpy(descriptorcopia,descriptormetodo);
 
-    if(strcmp(nomemetodo,"println")==0){
+	//printf("nomeMetodo: %s\n", nomemetodo);
+
+    if(strcmp(nomemetodo,"println") == 0){
+		//printf("strcmp -> if\n");
+
         double valorSaida_double;
         float valorSaida_float;
         long valorSaida_long;
@@ -2353,7 +2372,14 @@ void invokevirtual_impl(Frame *f, u1 indexbyte1, u1 indexbyte2){
                 if (string->topo->tipo_operando == DOUBLE_OP || string->topo->tipo_operando == LONG_OP) {
                     v2 = Pop_operandos(f->p);
                 }
-                Pop_operandos(f->p);
+
+				//printf("If !pilhaVazia:\n");
+
+                // Pilha_operandos *novo_pop = Pop_operandos(f->p);
+				//printf("%s\n", (char*)novo_pop->topo->referencia);
+
+				Pop_operandos(f->p);
+
                 switch(string->topo->tipo_operando){
 
                     case BOOLEAN_OP:
@@ -2373,7 +2399,7 @@ void invokevirtual_impl(Frame *f, u1 indexbyte1, u1 indexbyte2){
                     break;
                     case FLOAT_OP:
                         valorSaida_float = decodificaFloatValor(string->topo->operando);
-                        printf("%g\n",valorSaida_float);
+                        printf("%.6f\n",valorSaida_float);
                     break;
                     case LONG_OP:
                     	valorSaida_long = decodificaLongValor(v2->topo->operando,string->topo->operando);
@@ -2381,7 +2407,7 @@ void invokevirtual_impl(Frame *f, u1 indexbyte1, u1 indexbyte2){
                     break;
                     case DOUBLE_OP:
                         valorSaida_double = decodificaDoubleValor(v2->topo->operando, string->topo->operando);
-                        printf("%g\n",valorSaida_double);
+                        printf("%.6lf\n",valorSaida_double);
                     break;
                     case RETURN_ADDRESS_OP:
                         printf("[@%p\n",(u4*) string->topo->referencia);
@@ -2390,6 +2416,7 @@ void invokevirtual_impl(Frame *f, u1 indexbyte1, u1 indexbyte2){
                         printf("[Z@%p\n",(u4*) string->topo->referencia);
                     break;
                     case REFERENCE_ARRAY_CHAR_OP:
+						//printf("Impressao de string:\n");
                         printf("%s\n",(char*) string->topo->referencia);
                     break;
                     case REFERENCE_ARRAY_FLOAT_OP:
@@ -2411,17 +2438,123 @@ void invokevirtual_impl(Frame *f, u1 indexbyte1, u1 indexbyte2){
                         printf("[J@%p\n",(u4*) string->topo->referencia);
                     break;
                     case REFERENCE_OP:
-                        printf("[@%p\n",(u4*) string->topo->referencia);
+                        // printf("[@%p\n",(u4*) string->topo->referencia); 				// SOMENTE REF
+						// printf("[@%p -> %s\n", (u4*) string->topo->referencia, (char*) string->topo->referencia); 	// REF -> STRING
+						printf("%s\n", (char*) string->topo->referencia);
                     break;
 					case REFERENCE_STRING_OP:
+						//printf("Impressao de string:\n");
 						end = (u4*)string->topo->referencia;
+						//printf("%s\n", (char*)(string->topo->referencia));
 						printf("%s\n",(char*)(end));
 					break;
                 }
 
             } else {
+				//printf("else:\n");
+
                 Pop_operandos(f->p);
-                printf("\n");
+                //printf("\n");
+            }
+        }
+    }
+	else if(strcmp(nomemetodo,"print") == 0){
+		//printf("strcmp -> if -> print\n");
+
+        double valorSaida_double;
+        float valorSaida_float;
+        long valorSaida_long;
+
+        if (!pilhaVazia(f->p)) {
+            if (!printVazio(f->p)) {
+                Pilha_operandos *string = Pop_operandos(f->p);
+                Pilha_operandos * v2;
+                if (string->topo->tipo_operando == DOUBLE_OP || string->topo->tipo_operando == LONG_OP) {
+                    v2 = Pop_operandos(f->p);
+                }
+
+				//printf("If !pilhaVazia:\n");
+
+                // Pilha_operandos *novo_pop = Pop_operandos(f->p);
+				// printf("%s\n", (char*)novo_pop->topo->referencia);
+
+				Pop_operandos(f->p);
+
+                switch(string->topo->tipo_operando){
+
+                    case BOOLEAN_OP:
+                        printf("%d",(i4)string->topo->operando);
+                    break;
+                    case BYTE_OP:
+                        printf("%d",(i4)string->topo->operando);
+                    break;
+                    case CHAR_OP:
+                        printf("%c",(char)string->topo->operando);
+                    break;
+                    case SHORT_OP:
+                        printf("%d",(i4)string->topo->operando);
+                    break;
+                    case INTEGER_OP:
+                        printf("%d",(i4)string->topo->operando);
+                    break;
+                    case FLOAT_OP:
+                        valorSaida_float = decodificaFloatValor(string->topo->operando);
+                        printf("%.6f",valorSaida_float);
+                    break;
+                    case LONG_OP:
+                    	valorSaida_long = decodificaLongValor(v2->topo->operando,string->topo->operando);
+                        printf("%ld",valorSaida_long);
+                    break;
+                    case DOUBLE_OP:
+                        valorSaida_double = decodificaDoubleValor(v2->topo->operando, string->topo->operando);
+                        printf("%.6lf",valorSaida_double);
+                    break;
+                    case RETURN_ADDRESS_OP:
+                        printf("[@%p",(u4*) string->topo->referencia);
+                    break;
+                    case REFERENCE_ARRAY_BOOLEAN_OP:
+                        printf("[Z@%p",(u4*) string->topo->referencia);
+                    break;
+                    case REFERENCE_ARRAY_CHAR_OP:
+						//printf("Impressao de string:\n");
+                        printf("%s",(char*) string->topo->referencia);
+                    break;
+                    case REFERENCE_ARRAY_FLOAT_OP:
+                        printf("[F@%p",(u4*) string->topo->referencia);
+                    break;
+                    case REFERENCE_ARRAY_DOUBLE_OP:
+                        printf("[D@%p",(u4*) string->topo->referencia);
+                    break;
+                    case REFERENCE_ARRAY_BYTE_OP:
+                        printf("[B@%p",(u4*) string->topo->referencia);
+                    break;
+                    case REFERENCE_ARRAY_SHORT_OP:
+                        printf("[S@%p",(u4*) string->topo->referencia);
+                    break;
+                    case REFERENCE_ARRAY_INT_OP:
+                        printf("[I@%p",(u4*) string->topo->referencia);
+                    break;
+                    case REFERENCE_ARRAY_LONG_OP:
+                        printf("[J@%p",(u4*) string->topo->referencia);
+                    break;
+                    case REFERENCE_OP:
+						// printf("[@%p",(u4*) string->topo->referencia); 											// SOMENTE REF
+						// printf("[@%p -> %s", (u4*) string->topo->referencia, (char*) string->topo->referencia); 	// REF -> STRING
+						printf("%s", (char*) string->topo->referencia);
+                    break;
+					case REFERENCE_STRING_OP:
+						//printf("Impressao de string:\n");
+						end = (u4*)string->topo->referencia;
+						//printf("%s\n", (char*)(string->topo->referencia));
+						printf("%s",(char*)(end));
+					break;
+                }
+
+            } else {
+				//printf("else:\n");
+
+                Pop_operandos(f->p);
+                //printf("\n");
             }
         }
     }

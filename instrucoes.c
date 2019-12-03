@@ -1,4 +1,19 @@
-/* Arquivo fonte que monta o vetor de instruções e seus metadados.
+/*
+Universidade de Brasília - 02/2019
+Software Básico - Turma A
+JVM
+
+Alunos:
+				Brenda Barbosa de Souza   		 - 12/0111918
+				Jéssica da Silva Oliveira 		 - 13/0028983
+				Rafael Batista Menegassi  		 - 14/0159355
+				Rafael Silva de Alencar   		 - 13/0130834
+				Rodrigo Neris Ferreira Cardoso   - 14/0161597
+*/
+
+/** 
+ * Arquivo: instrucoes.c
+ * Montagem do vetor de instruções e seus metadados.
  * 		- A partir de uma enumeração definida no arquivo cabeçalho, este código
  * popula um vetor do tipo "instrucao" atribuindo os valores de nome, opcode, número
  * de argumentos e número de operandos de todas as instruções implementadas neste trabalho.
@@ -1043,13 +1058,13 @@ Instrucao* construirInstrucoes(void)
 			case tableswitch:
 				strcpy(instrucoes[i].inst_nome,"tableswitch");
 				instrucoes[i].opcode = tableswitch;
-				instrucoes[i].numarg = -1;
+				instrucoes[i].numarg = 0;
 				instrucoes[i].numop = 1;
 			break;
 			case lookupswitch:
 				strcpy(instrucoes[i].inst_nome,"lookupswitch");
 				instrucoes[i].opcode = lookupswitch;
-				instrucoes[i].numarg = -1;
+				instrucoes[i].numarg = 1;
 				instrucoes[i].numop = 1;
 			break;
 			case ireturn:

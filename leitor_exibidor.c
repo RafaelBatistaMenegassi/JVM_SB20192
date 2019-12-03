@@ -1,6 +1,19 @@
+/*
+Universidade de Brasília - 02/2019
+Software Básico - Turma A
+JVM
+
+Alunos:
+				Brenda Barbosa de Souza   		 - 12/0111918
+				Jéssica da Silva Oliveira 		 - 13/0028983
+				Rafael Batista Menegassi  		 - 14/0159355
+				Rafael Silva de Alencar   		 - 13/0130834
+				Rodrigo Neris Ferreira Cardoso   - 14/0161597
+*/
+
 /**
  * @file leitura.c
- * @brief Arquivo cabeçalho contendo funções do leitor/exibidor de .class
+ * @brief Cabeçalho contendo funções do leitor/exibidor de .class
  */
 
 /*Inclusão de estruturas e assinatura de funções de leitura*/
@@ -311,15 +324,24 @@ char* decodificarCode(Cp_info *cp, u2 sizeCP, u1 *code, u4 length,Instrucao *ins
 	strcpy(retorno,"");
 	int pc = 0;
 
+	//int numargant = 0;
+
 	for(aux=code;aux<code+length;){
 		int numarg = instrucoes[*aux].numarg;
 		int opcode = instrucoes[*aux].opcode;
 		char *nomeinst = malloc(100*sizeof(char));
+
+		/*if(numargant == 255) {
+			pc+=instrucoes[*aux].pc_instrucao;
+		}*/
+
 		sprintf(stringaux,"%d ",pc);
 		strcat(retorno,stringaux);
 		strcpy(nomeinst,instrucoes[*aux].inst_nome);
+
 		strcat(retorno,instrucoes[*aux].inst_nome);
 		pc+=instrucoes[*aux].pc_instrucao;
+
 		switch(numarg){
 			case 0:
 				if(opcode==wide){
@@ -501,9 +523,12 @@ char* decodificarCode(Cp_info *cp, u2 sizeCP, u1 *code, u4 length,Instrucao *ins
 
 			default:
 				strcat(retorno,"undefined");
+				
 				aux++;
 			break;
 		}
+
+		//numargant = numarg;
 
 	}
 
@@ -835,17 +860,22 @@ char* decodificaStringUTF8(Cp_info *cp){
 char* decodificarOperandoInstrucao(Cp_info *cp,u2 index, u2 sizeCP){
 
 	char *retorno = malloc(100*sizeof(char));
-	char *stringNomeClasse;// = malloc(100*sizeof(char));
-	char *stringNomeMetodo;// = malloc(100*sizeof(char));
-	char *stringGeral;// = malloc(100*sizeof(char));
-	char *ponteiro2pontos;// = malloc(100*sizeof(char));
-	Cp_info *cp_aux = cp+index-1;
+	char *stringNomeClasse;	// = malloc(100*sizeof(char));
+	char *stringNomeMetodo;	// = malloc(100*sizeof(char));
+	char *stringGeral;		// = malloc(100*sizeof(char));
+	char *ponteiro2pontos;	// = malloc(100*sizeof(char));
+
+	Cp_info *cp_aux;
+
+	cp_aux = cp+index-0x1;
+
 	long long saidaLong;
 	double valorSaida;
 	float saidaFloat;
 
-
 	if (index < sizeCP) {
+		// printf(" tag: %d ", cp_aux->tag);
+
 		switch(cp_aux->tag){
 			case CONSTANT_Methodref:
 
@@ -859,7 +889,6 @@ char* decodificarOperandoInstrucao(Cp_info *cp,u2 index, u2 sizeCP){
 
 				ponteiro2pontos = strchr(stringNomeMetodo,':');
 				*ponteiro2pontos = '\0';
-
 
 				strcpy(retorno,"<");
 				strcat(retorno,stringNomeClasse);
@@ -957,7 +986,7 @@ char* decodificarOperandoInstrucao(Cp_info *cp,u2 index, u2 sizeCP){
 	return(retorno);
 }
 
-// LEMBRAR QUE CP INFO COMEÇA DE 1, POR ISSO QUE SUBTRAI 1 NA SOMA
+// LEMBRAR QUE CP INFO COMEÇA DE 1, POR ISSO QUE SUBTRAI 1
 // Decodifica Name Index e Name Type
 char* decodificaNIeNT(Cp_info *cp, u2 index, u1 tipo){
 

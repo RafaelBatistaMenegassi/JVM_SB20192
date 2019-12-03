@@ -1,9 +1,7 @@
-/* Arquivo cabeçalho contendo as estruturas básicas utilizadas na JVM */
-
 /*
 Universidade de Brasília - 02/2019
 Software Básico - Turma A
-Projeto lógico JVM
+JVM
 
 Alunos:
 				Brenda Barbosa de Souza   		 - 12/0111918
@@ -21,7 +19,7 @@ Descrição:
 
 /*
 Implementado seguindo as especificações da Java Virtual Machine:
-https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.1
+https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.1
 
 ClassFile {
     u4             magic;
@@ -670,7 +668,7 @@ typedef struct vetor_locais
 
 typedef struct frame
 {
-  u4 end_retorno; // Verificar se é realmente endereço de retorno
+    u4 end_retorno; // Verificar se é realmente endereço de retorno
 	Pilha_operandos *p;
 	Vetor_locais *v;
 	u2 vetor_length;
